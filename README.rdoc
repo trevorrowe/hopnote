@@ -1,0 +1,38 @@
+= Hopnote
+
+Hopnote is a drop-in PHP error handler.  
+
+== Features
+
+* Provides Ruby on Rails like error pages during development.
+* Reports errors to Hoptoad for deployed environments and then renders a 500 page.
+* Utilizes Hoptoad API v2.0
+* Works with fatal PHP errors
+
+== Simple Example
+
+    require_once('Hopnote.php');
+    Hopnote::register_handlers('YOUR_API_KEY_HERE');
+
+== Example With Options
+
+    require_once('Hopnote.php');
+    Hopnote::register_handlers('YOUR_API_KEY_HERE', array(
+      'environment' => 'my_laptop',
+      'deployed' => false,
+      'fatals' => true,,
+      'root' => '/www/app/path',
+      'errors' => E_ALL | E_STRICT,
+      'fivehundred' => '/www/app/path/public/500.html',
+    ));
+  
+== Options (and Defaults)
+
+[environment]  development
+[deployed]  false 
+[root]  NULL
+[errors]  E_ALL
+[fivehundred]  500.html (as provided with Hopnote)
+[fatals] FALSE
+[controller] NULL
+[action] NULL

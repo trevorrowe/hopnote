@@ -20,8 +20,8 @@ class Hopnote {
 
     $defaults = array(
       'api_key'     => $api_key,
-      'environment' => 'production',
-      'deployed'    => TRUE,
+      'environment' => 'development',
+      'deployed'    => FALSE,
       'root'        => NULL,
       'errors'      => E_ALL,
       'fivehundred' => dirname(__FILE__) . '/500.html',
