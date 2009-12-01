@@ -6,13 +6,15 @@
 # TODO : provide a better looking default fivehundred page
 class Hopnote {
 
-  protected static $api_key;
-  protected static $root;
-  protected static $environment;
-  protected static $deployed;
-  protected static $errors;
-  protected static $fivehundred;
-  protected static $fatals;
+  public static $api_key;
+  public static $root;
+  public static $environment;
+  public static $deployed;
+  public static $errors;
+  public static $fivehundred;
+  public static $fatals;
+  public static $controller;
+  public static $action;
 
   public static function register_handlers($api_key, $options = array()) {
 
@@ -24,6 +26,8 @@ class Hopnote {
       'errors'      => E_ALL,
       'fivehundred' => dirname(__FILE__) . '/500.html',
       'fatals'      => FALSE,
+      'controller'  => NULL,
+      'action'      => NULL,
     );
 
     foreach($defaults as $opt => $default)
@@ -114,17 +118,17 @@ class Hopnote {
 
   protected static function parse_trace($backtrace) {
 
-    # trigger_error inserts a funny blank entry on top of the backtrace,
-    # we want to drop it if encountered
-    if(!isset($backtrace[0]['file']) || !isset($backtrace[0]['line']))
-      array_shift($backtrace);
-
     $root = self::$root;
     $trace = array();
 
     for($i = 0; $i < count($backtrace); ++$i) {
 
       $entry = $backtrace[$i];
+
+      # some built in php methods can appear in the trace but don't list a file,
+      # like spl_autoload_call
+      if(!isset($entry['file']))
+        continue; 
 
       # parse the file
       $file = $entry['file'];
@@ -275,8 +279,14 @@ EOT
     $url = htmlentities($url);
     array_push($xml, '<request>');
     array_push($xml, "<url>$url</url>");
-    array_push($xml, '<component>abc</component>');
-    array_push($xml, '<action>xyz</action>');
+    if(self::$controller)
+      array_push($xml, '<component>' . self::$controller . '</component>');
+    else
+      array_push($xml, '<component/>');
+    if(self::$action)
+      array_push($xml, '<action>' . self::$action . '</action>');
+    else
+      array_push($xml, '<action/>');
     if(isset($_REQUEST) && !empty($_REQUEST)) {
       array_push($xml, '<params>');
       foreach($_REQUEST as $k => $v) {
