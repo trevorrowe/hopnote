@@ -4,6 +4,7 @@
 # TODO : format params on the debug page
 # TODO : parse fatal error message into file, line and error
 # TODO : provide a better looking default fivehundred page
+# TODO : provide callbacks (for setting controller/action/logging/etc)
 class Hopnote {
 
   public static $api_key;
@@ -23,7 +24,7 @@ class Hopnote {
       'environment' => 'development',
       'deployed'    => FALSE,
       'root'        => NULL,
-      'errors'      => E_ALL,
+      'errors'      => ini_get('error_reporting'),
       'fivehundred' => dirname(__FILE__) . '/500.html',
       'fatals'      => FALSE,
       'controller'  => NULL,
@@ -35,6 +36,8 @@ class Hopnote {
         self::$$opt = $options[$opt];
       else
         self::$$opt = $default;
+
+    ini_set('error_reporting', self::$errors);
 
     set_error_handler('Hopnote::basic_error_handler', self::$errors);
 
