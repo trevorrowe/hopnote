@@ -111,6 +111,8 @@ class Hopnote {
 
     $trace = self::parse_trace($trace);
 
+    self::log($error_class, $msg, $trace);
+
     if(self::$deployed) {
       self::notify_hoptoad($error_class, $msg, $trace);
       return self::fivehundred_page();
@@ -171,6 +173,15 @@ class Hopnote {
     return file_get_contents(self::$fivehundred);
   }
 
+  protected static function log($error_class, $msg, $trace) {
+    App::$log->write("ERROR: $error_class");
+    App::$log->write("ERROR: $msg");
+    foreach($trace as $line) {
+      $function = $line['function'] ? ":in {$line['function']}" : '';
+      App::$log->write("{$line['file']}:{$line['line']}$function");
+    }
+  }
+
   /** 
    * Returns an HTML error page suitable for displaying in a development
    * environment.  
@@ -191,7 +202,7 @@ class Hopnote {
       padding: 0 10px;
       margin: 0;
     }
-    p#msg {
+    #msg {
       padding: 10px;
       background-color: #ccc;
     }
@@ -213,7 +224,7 @@ class Hopnote {
 <body>
 
   <h1>Error Encountered ($error_class)</h1>
-  <p id="msg" class="code">$msg</p>
+  <div id="msg" class="code">$msg</div>
 
   <h2>Backtrace</h2>
 EOT
